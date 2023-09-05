@@ -1,11 +1,41 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Square from "./Square";
 
 function Board() {
   const [state, setstate] = useState(Array(9).fill(null));
   const [IsXturn, setIsxturn] = useState(true);
 
+
+  useEffect(() => {
+    const savedBoard = JSON.parse(localStorage.getItem("ticTacToeBoard"));
+    const savedXIsNext = JSON.parse(localStorage.getItem("ticTacToeXIsNext"));
+
+    if (savedBoard) {
+      setstate(savedBoard);
+      setIsxturn(savedXIsNext);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("ticTacToeBoard", JSON.stringify(state));
+    localStorage.setItem("ticTacToeXIsNext", JSON.stringify(IsXturn));
+  }, [state, IsXturn]);
+  
+
+  const handleClick = (index) => {
+   
+    if (state[index] !== null) {
+      return;
+    }
+    const copystate = [...state];
+    copystate[index] = IsXturn ? "X" : "0";
+    setstate(copystate);
+    setIsxturn(!IsXturn);
+    localStorage.setItem('tictoctoe',JSON.stringify(copystate))
+  };
+
   const checkWinner = () => {
+     
     const Winnerlogic = [
       [0, 1, 2],
       [3, 4, 5],
@@ -26,15 +56,7 @@ function Board() {
   };
   const isWinner = checkWinner();
 
-  const handleClick = (index) => {
-    if (state[index] !== null) {
-      return;
-    }
-    const copystate = [...state];
-    copystate[index] = IsXturn ? "X" : "0";
-    setstate(copystate);
-    setIsxturn(!IsXturn);
-  };
+ 
 
   const handlePlayagain = () => {
     setstate(Array(9).fill(null));
